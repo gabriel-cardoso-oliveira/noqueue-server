@@ -45,9 +45,9 @@ class UnitsController {
   }
 
   async show(request: Request, response: Response) {
-    const { id } = request.params
+    const { id } = request.params;
 
-    const unit = await knex('units').where('id', id).first()
+    const unit = await knex('units').where('id', id).first();
 
     if (!unit) {
       return response.status(400).json({ message: 'Unit not fauld.' });
