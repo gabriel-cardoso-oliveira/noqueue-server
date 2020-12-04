@@ -33,7 +33,7 @@ routes.get('/passwords/count', chartsController.countPassword)
 routes.get('/passwords/:id', passwordsControllers.show)
 routes.get('/evaluation', evaluationController.index)
 routes.get('/evaluation/:id', evaluationController.show)
-routes.get('/evaluation/', evaluationController.count)
+routes.get('/total/evaluation', evaluationController.count)
 
 routes.post('/evaluation', celebrate({
   body: Joi.object().keys({

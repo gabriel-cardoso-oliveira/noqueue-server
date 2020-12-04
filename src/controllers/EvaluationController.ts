@@ -37,30 +37,32 @@ class EvaluationController {
     const { id } = request.params
 
     const stars = await knex('evaluation')
-    .where('unit_id', id)
-    .select('star')
+      .where('unit_id', id)
+      .select('star')
 
     if (!stars) {
       return response.json({
-        total: 0
+        media: 0
       });
     }
 
     const total = stars.reduce((a, b) => a.star + b.star);
 
+    const media = total / stars.length;
+
     return response.json({
-      total
+      media: Math.round(media)
     });
   }
 
   async count(request: Request, response: Response) {
     const { unit_id } = request.query
 
-    const total = await knex('evaluation')
-    .where('unit_id', Number(unit_id))
-    .count('id')
+    const [count] = await knex('evaluation')
+      .where('unit_id', Number(unit_id))
+      .count('id AS total')
 
-    return response.json(total);
+    return response.json(count);
   }
 }
 
