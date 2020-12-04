@@ -3,11 +3,19 @@ import knex from './../database/connection'
 
 class EvaluationController {
   async index(request: Request, response: Response) {
-    const { unit_id } = request.query
+    const { unit_id, user_id } = request.query
 
     const evaluation = await knex('evaluation')
       .where('unit_id', Number(unit_id))
-      .select('*')
+      .where('user_id', Number(user_id))
+      .select('star')
+      .first()
+
+    if (!evaluation) {
+      return response.json({
+        star: 0
+      });
+    }
 
     return response.json(evaluation);
   }
@@ -40,13 +48,13 @@ class EvaluationController {
       .where('unit_id', id)
       .select('star')
 
-    if (!stars) {
+    if (!stars.length) {
       return response.json({
         media: 0
       });
     }
 
-    const total = stars.reduce((a, b) => a.star + b.star);
+    const total = stars.reduce((a, b) => a + b.star, 0);
 
     const media = total / stars.length;
 
