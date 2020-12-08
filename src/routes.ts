@@ -29,6 +29,8 @@ routes.post('/units', celebrate({
 
 routes.get('/charts/hour/:id', chartsController.timeDay)
 routes.get('/charts/week/:id', chartsController.weekDay)
+routes.get('/filter/hour', chartsController.timeDayFilter)
+routes.get('/filter/week', chartsController.weekDayFilter)
 routes.get('/passwords/count', chartsController.countPassword)
 routes.get('/passwords/:id', passwordsControllers.show)
 routes.get('/evaluation', evaluationController.index)

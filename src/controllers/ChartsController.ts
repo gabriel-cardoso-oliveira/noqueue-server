@@ -32,6 +32,33 @@ class ChartsController {
 
     return response.json(result);
   }
+  
+  async timeDayFilter(request: Request, response: Response) {
+    const { id, startDate, finalDate } = request.query
+
+    const QUERY = `SELECT strftime('%H', hour) AS hour, COUNT(*) AS total
+    FROM passwords
+    WHERE unit_id = ? AND status = 'encerrado'
+    AND date >= ? AND date <= ?
+    GROUP BY strftime('%H', hour)
+    ORDER BY strftime('%H', hour)
+    `
+
+    const data = await knex.raw(QUERY, [
+      Number(id),
+      String(startDate),
+      String(finalDate)
+    ])
+
+    const result = {
+      labels: data.map((res: Hour) => `${res.hour}h`),
+      datasets: [{
+        data: data.map((res: Hour) => res.total),
+      }]
+    }
+
+    return response.json(result);
+  }
 
   async weekDay(request: Request, response: Response) {
     const { id } = request.params
@@ -43,6 +70,53 @@ class ChartsController {
     `
 
     const data = await knex.raw(QUERY, [id])
+
+    data.map((res: Week) => {
+      switch(res.week_day) {
+        case '1':
+          res.week_day = 'SEG';
+          break;
+        case '2':
+          res.week_day = 'TER';
+          break;
+        case '3':
+          res.week_day = 'QUA';
+          break;
+        case '4':
+          res.week_day = 'QUI';
+          break;
+        case '5':
+          res.week_day = 'SEX';
+          break;
+      }
+    })
+
+    const result = {
+      labels: data.map((res: Week) => res.week_day),
+      datasets: [{
+        data: data.map((res: Week) => res.total),
+      }]
+    }
+
+    return response.json(result);
+  }
+
+  async weekDayFilter(request: Request, response: Response) {
+    const { id, startDate, finalDate } = request.query
+
+    const QUERY = `SELECT strftime('%w', date) AS week_day, COUNT(*) AS total
+    FROM passwords
+    WHERE unit_id = ? AND status = 'encerrado'
+    AND date >= ? AND date <= ?
+    GROUP BY strftime('%w', date)
+    ORDER BY strftime('%w', date)
+    `
+
+    const data = await knex.raw(QUERY, [
+      Number(id),
+      String(startDate),
+      String(finalDate)
+    ])
 
     data.map((res: Week) => {
       switch(res.week_day) {
